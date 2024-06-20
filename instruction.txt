@@ -1,0 +1,33 @@
+Commands:
+0 (0) - exit programm
+1 (1) - enter next script value into stack
+2 (10) - print previous stack value
+3 (11) - double previous stack value
+4 (100) - sum two previous stack values
+5 (101) - min two previous stack values
+6 (110) - mult two previous stack values
+7 (111) - div two previous stack values
+8 (1000) - double previous stack value x times, x - previous script value
+9 (1001) - copy curent stack into new memory stack with increasing index for every new mem stack
+10 (1010) - add mem stack content with index of previous stack value into stack
+11 (1011) - add last mem stack value with index of previous stack value into stack
+12 (1100) - save curent stack in mem stack with index of previous stack value (clear mem stack)
+13 (1101) - add curent stack to mem stack with index of previous stack value
+14 (1110) - clear curent stack
+15 (1111) - delete previous stack value
+16 (10000) - delete x previous stack values, x - previous stack value
+17 (10001) - enter previous stack value into stack as char in ASCII
+18 (10010) - start new func writing, it stops at 19 command. New funcs have increasing index
+19 (10011) - end func writing
+20 (10100) - enter func commands in script, index of this func is previous stack value
+21 (10101) - copy next script command into script x times, x - previous stack value
+22 (10110) - print previous stack value without move to next line
+23 (10111) - copy x-th stack value before x and enter it into stack, x - previous stack value
+24 (11000) - swap two previous stack value
+25 (11001) - delete x next script commands, x - previous stack value
+26 (11010) - take 3 values from stack, previous is comparing type (0 - ==; 1 - !=; 2 - >; 3 - <; 4 - >=; 5 - <=), 2 more previously is comparing values (comparing in those order). If result is true will perform code until 27 command
+27 (11011) - end of code section of last comparing command (and for else section too)
+28 (11100) - else section for last comparing command
+29 (11101) - double two previous stack values in those order
+30 (11110) - copy 2nd previous stack value in mem stack with index of previous stack value
+31 (11111) - delete last input value and put it into stack
