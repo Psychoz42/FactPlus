@@ -31,3 +31,6 @@ Commands:
 29 (11101) - double two previous stack values in those order
 30 (11110) - copy 2nd previous stack value in mem stack with index of previous stack value
 31 (11111) - delete last input value and put it into stack
+32 (100000) - take 2 previous stack values, first is number, second is degree of it, and calculate it
+33 (100001) - previous stack value is number of itterations, code after it and before 34 command is cycle (in-cycle code won't delete, don't forget it while inserting itteration value!)
+34 (100011) - end of cycle code section

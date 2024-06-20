@@ -13,11 +13,11 @@ def printOutput_(text):
     print(text, end='')
 
 def saveFile():
-    with open(f"factScripts/{scriptName}", "w") as file:
+    with open(f"factPlusScripts/{scriptName}", "w") as file:
         file.write(editor.get(1.0, END).strip())
 
 def savePExit():
-    with open(f"factScripts/{scriptName}", "w") as file:
+    with open(f"factPlusScripts/{scriptName}", "w") as file:
         file.write(editor.get(1.0, END).strip())
     sys.exit()
 
@@ -32,7 +32,7 @@ def codeInterpretation():
     script = []
     inputVals = []
 
-    with open(f"factScripts/{scriptName}", "r") as file:
+    with open(f"factPlusScripts/{scriptName}", "r") as file:
         for line in file:
             if line[:1] == '#':
                 continue
@@ -124,16 +124,16 @@ def codeInterpretation():
                 stack.append(stack[-1])
             case 4:
                 stack[-2] += stack[-1]
-                stack.pop(-2)
+                stack.pop()
             case 5:
                 stack[-2] -= stack[-1]
-                stack.pop(-1)
+                stack.pop()
             case 6:
                 stack[-2] *= stack[-1]
-                stack.pop(-2)
+                stack.pop()
             case 7:
                 stack[-2] /= stack[-1]
-                stack.pop(-1)
+                stack.pop()
             case 8:
                 tempS = []
                 tempS.extend(stack)
@@ -234,9 +234,25 @@ def codeInterpretation():
                 for i in range(2): stack.append(stack[-2])
             case 30:
                 stacks[stack[-1]].append(stack[-2])
-                stack.pop()
+                for i in range(2): stack.pop()
             case 31:
                 stack.append(inputVals.pop())
+            case 32:
+                stack.append(stack.pop(-2) ** stack.pop())
+            case 33:
+                loopScript = script[curS+1:script.index(34, curS)]
+                for k in range(stack.pop()):
+                    j = 0
+                    for i in loopScript:
+                        script.insert(curS + 1 + j, i)
+                        j += 1
+            #case 35:
+
+
+
+
+
+
 
 
         curS += 1
@@ -272,18 +288,18 @@ def changeFile(event):
     global scriptName
     scriptName = fileSelect.get()
     editor.delete("1.0", END)
-    with open(f"factScripts/{scriptName}", "r") as file:
+    with open(f"factPlusScripts/{scriptName}", "r") as file:
         for i in file:
             editor.insert(END, i)
 
 def newFileWin():
 
     def addNewFile():
-        with open(f"factScripts/{newFileName.get()}.txt", "w") as file:
+        with open(f"factPlusScripts/{newFileName.get()}.txt", "w") as file:
             file.close()
         global filesList
         global fileSelect
-        filesList = os.listdir("factScripts/")
+        filesList = os.listdir("factPlusScripts/")
         fileSelect.config(values=filesList)
         curFiles.delete("1.0", END)
         for i in filesList:
@@ -397,7 +413,7 @@ convTextL.place(x=315, y=75, anchor='w', width=35, height=25)
 convTextBtn = ttk.Button(text="Convert into code", command=textConvert)
 convTextBtn.place(x=455, y=75, anchor='w', width=140, height=25)
 
-filesList = os.listdir("factScripts/")
+filesList = os.listdir("factPlusScripts/")
 scriptName = filesList[0]
 fileSelect = ttk.Combobox(values=filesList, state="readonly")
 fileSelect.current(0)
@@ -425,7 +441,7 @@ root.config(menu=main_menu)
 inputSetWinBtn = ttk.Button(text="Input", command=inputSetWin)
 inputSetWinBtn.place(relx=1, y=70, anchor="ne", width=70, height=70)
 
-with open(f"factScripts/{scriptName}", "r") as file:
+with open(f"factPlusScripts/{scriptName}", "r") as file:
     for rewr in file:
         editor.insert(END, rewr)
 
