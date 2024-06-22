@@ -2,6 +2,7 @@ import sys
 import os
 from tkinter import *
 from tkinter import ttk
+from random import randint
 
 
 def printOutput(text):
@@ -23,240 +24,246 @@ def savePExit():
 
 
 def codeInterpretation():
+    try:
 
-    output.delete(1.0, END)
-    saveFile()
+        output.delete(1.0, END)
+        saveFile()
 
-    lType = []
-    lVal = []
-    script = []
-    inputVals = []
+        lType = []
+        lVal = []
+        script = []
+        inputVals = []
 
-    with open(f"factPlusScripts/{scriptName}", "r") as file:
-        for line in file:
-            if line[:1] == '#':
-                continue
-            if line[-2:] == '\n':
-                if line.find(' ') != -1:
-                    lType.append(1)
-                    lVal.append(len(line[:-2].split()))
-                    script.extend(line[:-2].split())
-                else:
-                    lType.append(0)
-                    lVal.append(1)
-                    script.append(line[:-2])
-            else:
-                if line.find(' ') != -1:
-                    lType.append(1)
-                    lVal.append(len(line.split()))
-                    script.extend(line.split())
-                else:
-                    lType.append(0)
-                    lVal.append(1)
-                    script.append(line)
-
-    with open("input.txt", 'r') as file:
-        for line in file:
-            if line[:1] == '#':
-                continue
-            if line[-2:] == '\n':
-                inputVals.extend(line[:-2].split())
-            else:
-                inputVals.extend(line.split())
-
-    for i in range(len(inputVals)):
-        if inputVals[i] != '':
-            try:
-                inputVals[i] = int(inputVals[i], 2)
-            finally:
-                continue
-        else:
-            inputVals.pop(i)
-
-    for i in range(len(script)):
-        if script[i] != '':
-            script[i] = int(script[i], 2)
-        else:
-            script.pop(i)
-
-    #setup
-    if script[0] != 0:
-        printOutput("init error")
-        sys.exit()
-
-    printOutput("init complete")
-    printOutput(f"Script: {script}")
-    printOutput(f"Input: {inputVals}")
-    printOutput("Starting code performance:" + '\n')
-
-
-    stacks = []
-    stack = []
-    funcs = []
-    curS = 0
-    #curVal = 0
-    #tempVStock = 0
-
-    while curS < len(script):
-        #print("Stack:", stack)
-        #print("curS:", curS)
-        #print("Command:", script[curS])
-
-
-        if curS == 0:
-            curS+=1
-            continue
-
-        match script[curS]:
-            case 0:
-                printOutput('\n')
-                printOutput("Performance end")
-                printOutput(f"Stacks: {stacks} Cur stack: {stack}")
-                printOutput(f"Funcs: {funcs}")
-                break
-            case 1:
-                stack.append(script[curS+1])
-                curS+=2
-                continue
-            case 2:
-                printOutput(stack.pop())
-            case 3:
-                stack.append(stack[-1])
-            case 4:
-                stack[-2] += stack[-1]
-                stack.pop()
-            case 5:
-                stack[-2] -= stack[-1]
-                stack.pop()
-            case 6:
-                stack[-2] *= stack[-1]
-                stack.pop()
-            case 7:
-                stack[-2] /= stack[-1]
-                stack.pop()
-            case 8:
-                tempS = []
-                tempS.extend(stack)
-                stack.pop()
-                for i in range(script[curS-1]):
-                    stack.append(tempS[-2])
-                curS += 1
-                continue
-            case 9:
-                stacks.append([])
-                stacks[-1].extend(stack)
-            case 10:
-                tempV = stacks[stack[-1]]
-                stack.pop()
-                stack.extend(tempV)
-            case 11:
-                #print(stacks[stack[-1]][-1])
-                stack.append(stacks[stack[-1]][-1])
-                stack.pop(-2)
-            case 12:
-                stacks[stack[-1]] = []
-                tempP = stack[-1]
-                stack.pop()
-                stacks[tempP].extend(stack)
-            case 13:
-                for i in stack:
-                    stacks[stack[-1]].append(i)
-                stacks[stack[-1]].pop()
-                stack.pop()
-            case 14:
-                stack = []
-            case 15:
-                stack.pop()
-            case 16:
-                for i in range(stack[-1]+1):
-                    stack.pop()
-            case 17:
-                stack.append(chr(stack[-1]))
-                stack.pop(-2)
-            case 18:
-                funcs.append(script[curS+1:script.index(19,curS)])
-                del script[curS+1:script.index(19,curS)]
-            case 20:
-                j = 0
-                for i in funcs[stack[-1]]:
-                    script.insert(curS + 1 + j, i)
-                    j += 1
-                stack.pop()
-            case 21:
-                for i in range(stack[-1]):
-                    script.insert(curS + 1 + i, script[curS + 1])
-                stack.pop()
-            case 22:
-                printOutput_(stack.pop())
-            case 23:
-                t = stack.pop()
-                stack.append(stack[-1- t])
-            case 24:
-                stack[-1], stack[-2] = stack[-2], stack[-1]
-            case 25:
-                for i in range(stack[-1]):
-                    script.pop(curS + 1)
-                stack.pop()
-            case 26:
-                tmpComp = False
-                match stack.pop():
-                    case 0:
-                        if stack[-2] == stack[-1]:
-                            tmpComp = True
-                    case 1:
-                        if stack[-2] != stack[-1]:
-                            tmpComp = True
-                    case 2:
-                        if stack[-2] > stack[-1]:
-                            tmpComp = True
-                    case 3:
-                        if stack[-2] < stack[-1]:
-                            tmpComp = True
-                    case 4:
-                        if stack[-2] >= stack[-1]:
-                            tmpComp = True
-                    case 5:
-                        if stack[-2] <= stack[-1]:
-                            tmpComp = True
-                if tmpComp == True:
-                    if 28 in script:
-                        if script.index(28, curS) < script.index(27, curS):
-                            del script[script.index(28, curS):script.index(27, curS)]
-                elif 28 in script:
-                    if script.index(28, curS) < script.index(27, curS):
-                        del script[curS:script.index(28, curS)]
+        with open(f"factPlusScripts/{scriptName}", "r") as file:
+            for line in file:
+                if line[:1] == '#':
+                    continue
+                if line[-2:] == '\n':
+                    if line.find(' ') != -1:
+                        lType.append(1)
+                        lVal.append(len(line[:-2].split()))
+                        script.extend(line[:-2].split())
                     else:
-                        del script[curS:script.index(27,curS)]
+                        lType.append(0)
+                        lVal.append(1)
+                        script.append(line[:-2])
                 else:
-                    del script[curS:script.index(27, curS)]
-                for i in range(2): stack.pop()
-            case 29:
-                for i in range(2): stack.append(stack[-2])
-            case 30:
-                stacks[stack[-1]].append(stack[-2])
-                for i in range(2): stack.pop()
-            case 31:
-                stack.append(inputVals.pop())
-            case 32:
-                stack.append(stack.pop(-2) ** stack.pop())
-            case 33:
-                loopScript = script[curS+1:script.index(34, curS)]
-                for k in range(stack.pop()):
+                    if line.find(' ') != -1:
+                        lType.append(1)
+                        lVal.append(len(line.split()))
+                        script.extend(line.split())
+                    else:
+                        lType.append(0)
+                        lVal.append(1)
+                        script.append(line)
+
+        with open("input.txt", 'r') as file:
+            for line in file:
+                if line[:1] == '#':
+                    continue
+                if line[-2:] == '\n':
+                    inputVals.extend(line[:-2].split())
+                else:
+                    inputVals.extend(line.split())
+
+        for i in range(len(inputVals)):
+            if inputVals[i] != '':
+                try:
+                    inputVals[i] = int(inputVals[i], 2)
+                finally:
+                    continue
+            else:
+                inputVals.pop(i)
+
+        for i in range(len(script)):
+            if script[i] != '':
+                script[i] = int(script[i], 2)
+            else:
+                script.pop(i)
+
+        #setup
+        if script[0] != 0:
+            printOutput("init error")
+            sys.exit()
+
+        printOutput("init complete")
+        printOutput(f"Script: {script}")
+        printOutput(f"Input: {inputVals}")
+        printOutput("Starting code performance:" + '\n')
+
+
+        stacks = []
+        stack = []
+        funcs = []
+        curS = 0
+        #curVal = 0
+        #tempVStock = 0
+
+        while curS < len(script):
+            #print("Stack:", stack)
+            #print("curS:", curS)
+            #print("Command:", script[curS])
+
+
+            if curS == 0:
+                curS+=1
+                continue
+
+            match script[curS]:
+                case 0:
+                    printOutput('\n')
+                    printOutput("Performance end")
+                    printOutput(f"Stacks: {stacks} Cur stack: {stack}")
+                    printOutput(f"Funcs: {funcs}")
+                    break
+                case 1:
+                    stack.append(script[curS+1])
+                    curS+=2
+                    continue
+                case 2:
+                    printOutput(stack.pop())
+                case 3:
+                    stack.append(stack[-1])
+                case 4:
+                    stack[-2] += stack[-1]
+                    stack.pop()
+                case 5:
+                    stack[-2] -= stack[-1]
+                    stack.pop()
+                case 6:
+                    stack[-2] *= stack[-1]
+                    stack.pop()
+                case 7:
+                    stack[-2] /= stack[-1]
+                    stack.pop()
+                case 8:
+                    tempS = []
+                    tempS.extend(stack)
+                    stack.pop()
+                    for i in range(script[curS-1]):
+                        stack.append(tempS[-2])
+                    curS += 1
+                    continue
+                case 9:
+                    stacks.append([])
+                    stacks[-1].extend(stack)
+                case 10:
+                    tempV = stacks[stack[-1]]
+                    stack.pop()
+                    stack.extend(tempV)
+                case 11:
+                    #print(stacks[stack[-1]][-1])
+                    stack.append(stacks[stack[-1]][-1])
+                    stack.pop(-2)
+                case 12:
+                    stacks[stack[-1]] = []
+                    tempP = stack[-1]
+                    stack.pop()
+                    stacks[tempP].extend(stack)
+                case 13:
+                    for i in stack:
+                        stacks[stack[-1]].append(i)
+                    stacks[stack[-1]].pop()
+                    stack.pop()
+                case 14:
+                    stack = []
+                case 15:
+                    stack.pop()
+                case 16:
+                    for i in range(stack[-1]+1):
+                        stack.pop()
+                case 17:
+                    stack.append(chr(stack[-1]))
+                    stack.pop(-2)
+                case 18:
+                    funcs.append(script[curS+1:script.index(19,curS)])
+                    del script[curS+1:script.index(19,curS)]
+                case 20:
                     j = 0
-                    for i in loopScript:
+                    for i in funcs[stack[-1]]:
                         script.insert(curS + 1 + j, i)
                         j += 1
-            #case 35:
+                    stack.pop()
+                case 21:
+                    for i in range(stack[-1]):
+                        script.insert(curS + 1 + i, script[curS + 1])
+                    stack.pop()
+                case 22:
+                    printOutput_(stack.pop())
+                case 23:
+                    t = stack.pop()
+                    stack.append(stack[-1- t])
+                case 24:
+                    stack[-1], stack[-2] = stack[-2], stack[-1]
+                case 25:
+                    for i in range(stack[-1]):
+                        script.pop(curS + 1)
+                    stack.pop()
+                case 26:
+                    tmpComp = False
+                    match stack.pop():
+                        case 0:
+                            if stack[-2] == stack[-1]:
+                                tmpComp = True
+                        case 1:
+                            if stack[-2] != stack[-1]:
+                                tmpComp = True
+                        case 2:
+                            if stack[-2] > stack[-1]:
+                                tmpComp = True
+                        case 3:
+                            if stack[-2] < stack[-1]:
+                                tmpComp = True
+                        case 4:
+                            if stack[-2] >= stack[-1]:
+                                tmpComp = True
+                        case 5:
+                            if stack[-2] <= stack[-1]:
+                                tmpComp = True
+                    if tmpComp == True:
+                        if 28 in script:
+                            if script.index(28, curS) < script.index(27, curS):
+                                del script[script.index(28, curS):script.index(27, curS)]
+                    elif 28 in script:
+                        if script.index(28, curS) < script.index(27, curS):
+                            del script[curS:script.index(28, curS)]
+                        else:
+                            del script[curS:script.index(27,curS)]
+                    else:
+                        del script[curS:script.index(27, curS)]
+                    for i in range(2): stack.pop()
+                case 29:
+                    for i in range(2): stack.append(stack[-2])
+                case 30:
+                    stacks[stack[-1]].append(stack[-2])
+                    for i in range(2): stack.pop()
+                case 31:
+                    stack.append(inputVals.pop())
+                case 32:
+                    stack.append(stack.pop(-2) ** stack.pop())
+                case 33:
+                    loopScript = script[curS+1:script.index(34, curS)]
+                    for k in range(stack.pop()):
+                        j = 0
+                        for i in loopScript:
+                            script.insert(curS + 1 + j, i)
+                            j += 1
+                case 35:
+                    stack.append(randint(stack.pop(), stack.pop()))
+                case 36:
+                    script.insert(curS + 1, stack.pop())
+                case 37:
+                    stack.append(stack.pop() * -1)
+                #case 38:
 
 
 
 
 
 
-
-
-        curS += 1
-
+            curS += 1
+    except Exception as excText:
+        printOutput(f"Here is an exception! \n{excText}")
 
 
 def changeInt():

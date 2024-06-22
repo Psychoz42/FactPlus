@@ -33,4 +33,7 @@ Commands:
 31 (11111) - delete last input value and put it into stack
 32 (100000) - take 2 previous stack values, first is number, second is degree of it, and calculate it
 33 (100001) - previous stack value is number of itterations, code after it and before 34 command is cycle (in-cycle code won't delete, don't forget it while inserting itteration value!)
-34 (100011) - end of cycle code section
+34 (100010) - end of cycle code section
+35 (100011) - takes 2 previous stack values and add new random value in it's range into stack (like python's randint), first value is upper, second - lower value
+36 (100100) - add last stack value in script as command (right after this command)
+37 (100101) - inverts last stack value (mult with -1)
