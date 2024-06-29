@@ -251,17 +251,53 @@ def codeInterpretation():
                 case 35:
                     stack.append(randint(stack.pop(), stack.pop()))
                 case 36:
-                    script.insert(curS + 1, stack.pop())
+                    script.insert(curS + 1, int(stack.pop()))
                 case 37:
                     stack.append(stack.pop() * -1)
-                #case 38:
+                case 38:
+                    stack.append(str(stack.pop()) + str(stack.pop()))
+                case 39:
+                    openType = stack.pop()
+                    match openType:
+                        case 0:
+                            openType = 'w'
+                        case 1:
+                            openType = 'r'
+                        case 2:
+                            openType = 'a'
+                        case 3:
+                            openType = 'w+'
+                        case 4:
+                            openType = 'r+'
 
+                    userFileName = stack.pop()
 
-
+                    userCurFile = open(f"user'sFiles/{userFileName}.txt", openType)
+                case 40:
+                    userCurFileStrList = userCurFile.readlines()
+                case 41:
+                    stack.append(userCurFileStrList.pop())
+                case 42:
+                    userCurFile.write(str(stack.pop()))
+                case 43:
+                    script.insert(curS + 1, int(userCurFileStrList.pop(), 2))
+                case 44:
+                    for i in range(len(userCurFileStrList)):
+                        if '\n' in userCurFileStrList[-1]:
+                            script.insert(curS + i + 1, int(userCurFileStrList.pop()[:-1], 2))
+                        else:
+                            script.insert(curS + i + 1, int(userCurFileStrList.pop(), 2))
+                case 45:
+                    userCurFile.close()
 
 
 
             curS += 1
+
+
+
+
+
     except Exception as excText:
         printOutput(f"Here is an exception! \n{excText}")
 
@@ -286,9 +322,9 @@ def charConvert():
     asciiInt.insert(0, bin(ord(asciiChar.get()))[2:])
 
 def textConvert():
-    for i in range(len(convText.get())):
-        editor.insert(END, '1 ' + bin(ord(convText.get()[len(convText.get()) - 1 -i]))[2:] + ' 10001' + '\n')
-    convText.delete(0, END)
+    for i in range(len(convText.get("1.0", "end"))):
+        editor.insert(END, '1 ' + bin(ord(convText.get("1.0", "end")[len(convText.get("1.0", "end")) - 1 -i]))[2:] + ' 10001' + '\n')
+    convText.delete("1.0", END)
 
 def changeFile(event):
     saveFile()
@@ -413,7 +449,7 @@ convCLab2 = ttk.Label(text="ASCII")
 convCLab1.place(x=315, y=15, anchor='w', width=50, height=20)
 convCLab2.place(x=490, y=15, anchor='w', width=50, height=20)
 
-convText = ttk.Entry()
+convText = Text()
 convText.place(x=315, y=100, anchor='w', width=280, height=25)
 convTextL = ttk.Label(text="Text")
 convTextL.place(x=315, y=75, anchor='w', width=35, height=25)

@@ -37,3 +37,11 @@ Commands:
 35 (100011) - takes 2 previous stack values and add new random value in it's range into stack (like python's randint), first value is upper, second - lower value
 36 (100100) - add last stack value in script as command (right after this command)
 37 (100101) - inverts last stack value (mult with -1)
+38 (100110) - sum 2 previous stack values as strings (upper + lower in stack)
+39 (100111) - takes 2 previous stack values, last in stack is opening type (0-w, 1-r, 2-a, 3-w+, 3-r+ (like in python)), the following value is name of file, and open file in this opening type
+40 (101000) - read all lines from opened file and after this you can use it
+41 (101001) - add last value from read file into stack
+42 (101010) - write last stack value in opened file
+43 (101011) - add last value from read file into script as command
+44 (101100) - add all remaining lines from read file into script as command
+45 (101101) - closes opened file
